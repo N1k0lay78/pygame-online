@@ -6,8 +6,8 @@ import pickle
 
 
 class Person:
-    def __init__(self, pos, r, name):
-        self.data = {'pos': pos, 'r': r, 'name': name, 'type': 'Player'}
+    def __init__(self, pos, r, name, color):
+        self.data = {'pos': pos, 'r': r, 'name': name, 'type': 'Player', 'color': pygame.Color(color)}
 
     def get_json(self):
         return self.data
@@ -29,11 +29,11 @@ class Person:
 
 
 class ObjectGroup:
-    def __init__(self, name, ip_server):
+    def __init__(self, name, ip_server, color):
         size_screen = (GetSystemMetrics(0), GetSystemMetrics(1))
         size_screen = (300, 300)
         self.screen = pygame.display.set_mode(size_screen)
-        self.objects1 = [Person([100, 100], 10, name)]
+        self.objects1 = [Person([100, 100], 10, name, color)]
         pygame.display.flip()
         global objects
         global d
@@ -55,8 +55,8 @@ class ObjectGroup:
         global d, objects
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                global run
-                run = False
+                global shutdown
+                shutdown = True
             if event.type == pygame.KEYDOWN:
                 if event.key in [pygame.K_a, pygame.K_LEFT]:
                     self.motions[0] = True
@@ -83,7 +83,7 @@ class ObjectGroup:
             for object in values:
                 object = object
                 if object['type'] == 'Player':
-                    pygame.draw.circle(self.screen, (100, 100, 100), object['pos'], object['r'])
+                    pygame.draw.circle(self.screen, object['color'], object['pos'], object['r'])
         pygame.display.flip()
 
 
@@ -123,16 +123,17 @@ s.setblocking(0)
 
 alias = input("Name: ")
 server[0] = input('server IP: ')
+color = input('color: ')
 server = tuple(server)
 speed = 5
 objects = {'objects': [], 'online': []}
 d = {'objects': [], 'online': []}
-game = ObjectGroup(alias, server)
+game = ObjectGroup(alias, server, color)
 
 rT = threading.Thread(target=receving, args=("RecvThread", s))
 rT.start()
 
-while shutdown == False:
+while not shutdown:
     if join == False:
         join = True
     else:
