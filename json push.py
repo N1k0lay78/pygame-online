@@ -2,6 +2,8 @@ import socket, threading, time
 from pickle import dumps
 import pickle
 
+# если хочешь понять как работает
+# https://www.youtube.com/watch?v=MPjgHxK8k68
 key = 8194
 
 shutdown = False
@@ -12,14 +14,11 @@ def receving(name, sock):
     while not shutdown:
         try:
             while True:
+                # принимаем данные
                 data, addr = sock.recvfrom(1024)
-                # print(data.decode("utf-8"))
+                # расшифровываем и выводим
                 struct = pickle.loads(data)
                 print(struct)
-                # Begin
-                print('cds')
-                # End
-
                 time.sleep(0.2)
         except:
             pass
@@ -45,8 +44,10 @@ while shutdown == False:
         join = True
     else:
         message = input()
+        # если что то ввели то создаём словарь с данными
         slow = {'gg': 'hello'}
         print("push")
+        # и отправляем их
         s.sendto(dumps(slow), server)
         time.sleep(0.2)
 
